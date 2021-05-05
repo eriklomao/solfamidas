@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Home</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/estilos.css' %}"/>
+    </head>
+    <body>
+        <!-- Side navigation -->
+        <div class="sidenav">
+            {% if user.is_authenticated %}
+                <span id="saludo">Hola, {{ request.user }}</span>
+                <span><a id="logout" href="{% url 'logout' %}">Logout</a></span>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Registrarse</a>
+            {% endif %}
+            <hr style="width:100%;text-align:left;margin-left:0;border: 1px solid #818181">
+            <a href="{% url 'principal' %}">Home</a>
+            <a href="{% url 'clasificacion' %}">Clasificación</a>
+            <a href="{% url 'mercado' %}">Mercado</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'equipo' %}">Mi equipo</a>
+            {% endif %}
+        </div>
+
+        <!-- Page content -->
+
+        {% if user.is_authenticated %}
+
+            <h1>Bienvenido de vuelta a Solfamidas, {{ request.user }}</h1>
+
+        {% else %}
+            <div>
+                <h1>Bienvenidos a Solfamidas</h1>
+            </div>
+            <form action="{% url 'login' %}">
+                <button class="login-btn">Log-in</button>
+            </form>
+
+            <form action="{% url 'register' %}">
+                <button class="logout-btn">Registrarse</button>
+            </form>
+        {% endif %}
+
+    </body>
+</html>

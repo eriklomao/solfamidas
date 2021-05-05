@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clasificación</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/clasificacion.css' %}"/>
+</head>
+<body>
+    <!-- Side navigation -->
+    <div class="sidenav">
+        {% if user.is_authenticated %}
+            <span id="saludo">Hola, {{ request.user }}</span>
+            <span><a id="logout" href="{% url 'logout' %}">Logout</a></span>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Registrarse</a>
+        {% endif %}
+        <hr style="width:100%;text-align:left;margin-left:0;border: 1px solid #818181">
+        <a href="{% url 'principal' %}">Home</a>
+        <a href="{% url 'clasificacion' %}">Clasificación</a>
+        <a href="{% url 'mercado' %}">Mercado</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'equipo' %}">Mi equipo</a>
+        {% endif %}
+    </div>
+
+    <div>
+        <h1>Tabla de clasificación</h1>
+    </div>
+
+    <div>
+        <table style="color:black;">
+            <thead>
+            <tr>
+                <th scope="col">Puesto</th>
+                <th scope="col">Nombre del equipo</th>
+                <th scope="col">Puntuación</th>
+                <th scope="col">Dueño</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--<tr>
+                <td data-label="Account">1</td>
+                <td data-label="Due Date">Erik Rockets</td>
+                <td data-label="Amount">Iñigo Loma-Osorio</td>
+                <td data-label="Period">12734</td>
+            </tr>
+            <tr>
+                <td scope="row" data-label="Account">2</td>
+                <td data-label="Due Date">Real Juasjuas</td>
+                <td data-label="Amount">Javier Simon</td>
+                <td data-label="Period">11346</td>
+            </tr>
+            <tr>
+                <td scope="row" data-label="Account">3</td>
+                <td data-label="Due Date">FC Julius</td>
+                <td data-label="Amount">Julio Lopez</td>
+                <td data-label="Period">10291</td>
+            </tr>
+            <tr>
+                <td scope="row" data-label="Acount">4</td>
+                <td data-label="Due Date">Robertito United</td>
+                <td data-label="Amount">Roberto Rodriguez-Solano</td>
+                <td data-label="Period">9283</td>
+            </tr>
+            <tr>
+                <td scope="row" data-label="Acount">5</td>
+                <td data-label="Due Date">Atletico de Juanin</td>
+                <td data-label="Amount">Juan Fernandez</td>
+                <td data-label="Period">8213</td>
+            </tr>-->
+            {% for equipo,score,user in scores %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ equipo }}</td>
+                    <td>{{ score }}</td>
+                    <td>{{ user }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

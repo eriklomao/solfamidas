@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi equipo</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/equipo.css' %}"/>
+    <script src="{% static 'js/equipo.js' %}"></script>
+</head>
+<body>
+<!-- Side navigation -->
+<div class="sidenav">
+    {% if user.is_authenticated %}
+        <span id="saludo">Hola, {{ request.user }}</span>
+        <span><a id="logout" href="{% url 'logout' %}">Logout</a></span>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Registrarse</a>
+    {% endif %}
+    <hr style="width:100%;text-align:left;margin-left:0;border: 1px solid #818181">
+    <a href="{% url 'principal' %}">Home</a>
+    <a href="{% url 'clasificacion' %}">Clasificación</a>
+    <a href="{% url 'mercado' %}">Mercado</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'equipo' %}">Mi equipo</a>
+    {% endif %}
+</div>  
+
+<input type="hidden" id="myVar" name="variable" value="{{ datos  }}">
+
+<h1>{{ equipo.0 }}</h1>
+
+<h2>Presupuesto: {{ equipo.1 }} €</h2>
+
+<h3>Jugadores</h3>
+
+<table style="color:black;">
+    <thead>
+    <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Equipo</th>
+        <th scope="col">Edad</th>
+        <th scope="col">Altura</th>
+        <th scope="col">Precio</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for jugador in jugadores %}
+        <tr onclick="miFuncion(this)">
+            {% for dato in jugador %}
+                <td>{{ dato }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+<div>
+    <form action="{% url 'addJugador' %}">
+        <button id="addJugador">Comprar jugador</button>
+    </form>
+    <form action="{% url 'delJugador' %}">
+        <button id="delJugador">Vender jugador</button>
+    </form>
+</div>
+
+
+<h3>Estadisticas</h3>
+
+<!--<img src="{% static 'img/precio.png' %}" width="1300">
+<img src="{% static 'img/goles.png' %}" width="1300">
+<img src="{% static 'img/asistencias.png' %}" width="1300">
+<img src="{% static 'img/resultados.png' %}" width="1300">
+<img src="{% static 'img/tarjetas.png' %}" width="1300">
+<img src="{% static 'img/sanciones.png' %}" width="1300">
+<img src="{% static 'img/minutos.png' %}" width="1300">-->
+
+<!-- The Modal -->
+<div id="myModal" class="modal" style="color:black;text-align: center;">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <table>
+            <tr>
+            <tr>
+                <h2 id="jugNombre"></h2>
+                <img id="jugFoto" src="">
+            </tr>
+            </tr>
+            <tr>
+                <td>
+                    <p id="jugGoles"></p></br>
+                    <p id="jugAsist">Asistencias: 0</p></br>
+                    <p id="jugAma">Amarillas: 3</p></br>
+                    <p id="jugSegAma">Segundas Amarillas: 0</p></br>
+                    <p id="jugRojas">Rojas: 0</p></br>
+                    <p id="jugMin">Minutos totales de juego: 1276</p></br>
+                    <p id="jugVic">Victorias: 10</p></br>
+                    <p id="jugDer">Derrotas: 2</p></br>
+                    <p id="jugEmp">Empates: 3</p></br>
+                    <p id="jugAus">Partidos ausente: 13</p></br>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

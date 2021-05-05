@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/añadir.css' %}"/>
+    <script src="{% static 'js/añadir.js' %}"></script>
+</head>
+<body>
+<!-- Side navigation -->
+<div class="sidenav">
+    {% if user.is_authenticated %}
+        <span id="saludo">Hola, {{ request.user }}</span>
+        <span><a id="logout" href="{% url 'logout' %}">Logout</a></span>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Registrarse</a>
+    {% endif %}
+    <hr style="width:100%;text-align:left;margin-left:0;border: 1px solid #818181">    
+    <a href="{% url 'principal' %}">Home</a>
+    <a href="{% url 'clasificacion' %}">Clasificación</a>
+    <a href="{% url 'mercado' %}">Mercado</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'equipo' %}">Mi equipo</a>
+    {% endif %}
+</div>
+
+<div>
+    <h1>Añadir Jugador</h1>
+</div>
+
+<!-- Load icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- The form -->
+<form class="example" action="{% url 'addJugador' %}">Buscar Jugador
+    <input type="text" placeholder="Buscar.." name="search">
+    <button type="submit"><i class="fa fa-search"></i></button>
+</form>
+
+<table style="color:black;">
+    <thead>
+    <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Posicion</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Equipo</th>
+        <th scope="col">ID</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for jugador in lista_jugadores %}
+        <tr onclick="miFuncion(this)">
+            {% for dato in jugador %}
+                <td>{{ dato }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+<!-- The Modal -->
+<div id="myModal" class="modal" style="color:black;text-align: center;">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="modal_h3"></h3>
+        <p id="modal_p"></p>
+        <div style="display:inline-block; text-align:center;">
+            <form id="si_btn" action="{% url 'addPlayer' %}" style="float:left; margin: 10px;">
+                <button value="" name="add" id="add_si" type="submit">Si</button>
+            </form>
+            <form id="no_btn" action="{% url 'equipo' %}" style="float:right; margin: 10px;">
+                <button type="submit">No</button>
+            </form>
+        </div> 
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Mercado.css' %}"/>
+</head>
+<body>
+<!-- Side navigation -->
+<div class="sidenav">
+    {% if user.is_authenticated %}
+        <span id="saludo">Hola, {{ request.user }}</span>
+        <span><a id="logout" href="{% url 'logout' %}">Logout</a></span>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Registrarse</a>
+    {% endif %}
+    <hr style="width:100%;text-align:left;margin-left:0;border: 1px solid #818181">
+    <a href="{% url 'principal' %}">Home</a>
+    <a href="{% url 'clasificacion' %}">Clasificación</a>
+    <a href="{% url 'mercado' %}">Mercado</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'equipo' %}">Mi equipo</a>
+    {% endif %}
+</div>
+
+<div>
+    <h1>Mercado</h1>
+</div>
+
+<!-- Load icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- The form -->
+<form class="example" action="action_page.php">Buscar Jugador
+    <input type="text" placeholder="Search.." name="search">
+    <button type="submit"><i class="fa fa-search"></i></button>
+</form>
+
+<table>
+    <tr>
+        <tr><h2>Sergio Ramos</h2></tr>
+    </tr>
+    <tr>
+        <td style="padding-right:100px"><img src="https://img.a.transfermarkt.technology/portrait/header/25557-1604163453.jpg?lm=1"></td>
+        <td>
+            <p>Club: Real Madrid CF</p></br>
+            <p>Edad: 34</p></br>
+            <p>Altura: 1,84</p></br>
+            <p>Valor: 14M</p></br>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+    <th><h2>Estadisticas de la temporada</h2></th>
+    </tr>
+    <tr>
+        <td>
+            <p>Goles: 2</p></br>
+            <p>Asistencias: 0</p></br>
+            <p>Amarillas: 3</p></br>
+            <p>Segundas Amarillas: 0</p></br>
+            <p>Rojas: 0</p></br>
+            <p>Minutos totales de juego: 1276</p></br>
+            <p>Victorias: 10</p></br>
+            <p>Derrotas: 2</p></br>
+            <p>Empates: 3</p></br>
+            <p>Partidos ausente: 13</p></br>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
