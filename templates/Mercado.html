@@ -6,6 +6,36 @@
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/Mercado.css' %}"/>
 </head>
+
+<div id="myModal" class="modal" style="color:black;text-align: center;">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <table>
+            <tr>
+            <tr>
+                <h2 id="jugNombre"></h2>
+                <img id="jugFoto" src="">
+            </tr>
+            </tr>
+            <tr>
+                <td>
+                    <p id="jugGoles"></p></br>
+                    <p id="jugAsist"></p></br>
+                    <p id="jugAma"></p></br>
+                    <p id="jugSegAma"></p></br>
+                    <p id="jugRojas"></p></br>
+                    <p id="jugMin"></p></br>
+                    <p id="jugAus"></p></br>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+
 <body>
 <!-- Side navigation -->
 <div class="sidenav">
@@ -25,53 +55,124 @@
     {% endif %}
 </div>
 
-<div>
+<div style="text-align: center;">
     <h1>Mercado</h1>
+    <h3>Aqui puedes consultar los datos actuales de los jugadores en sus respectivas ligas</h3>
+    <h3>y considerarlos para tu equipo</h3>
 </div>
 
 <!-- Load icon library -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <!-- The form -->
-<form class="example" action="action_page.php">Buscar Jugador
+
+<input type="hidden" name="myVar" value="{{ detalles }}">
+
+<form class="example" method="POST" action="{% url 'mercado' %}">Buscar Jugador
+    {% csrf_token %}
     <input type="text" placeholder="Search.." name="search">
     <button type="submit"><i class="fa fa-search"></i></button>
 </form>
 
-<table>
+<table id="tableData" style="color:black;">
+    <thead>
     <tr>
-        <tr><h2>Sergio Ramos</h2></tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Posicion</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Equipo</th>
+        <th scope="col">ID</th>
+        <th scope="col">Detalles</th>
     </tr>
-    <tr>
-        <td style="padding-right:100px"><img src="https://img.a.transfermarkt.technology/portrait/header/25557-1604163453.jpg?lm=1"></td>
-        <td>
-            <p>Club: Real Madrid CF</p></br>
-            <p>Edad: 34</p></br>
-            <p>Altura: 1,84</p></br>
-            <p>Valor: 14M</p></br>
-        </td>
-    </tr>
-</table>
+    </thead>
+    <tbody>
 
-<table>
-    <tr>
-    <th><h2>Estadisticas de la temporada</h2></th>
-    </tr>
-    <tr>
-        <td>
-            <p>Goles: 2</p></br>
-            <p>Asistencias: 0</p></br>
-            <p>Amarillas: 3</p></br>
-            <p>Segundas Amarillas: 0</p></br>
-            <p>Rojas: 0</p></br>
-            <p>Minutos totales de juego: 1276</p></br>
-            <p>Victorias: 10</p></br>
-            <p>Derrotas: 2</p></br>
-            <p>Empates: 3</p></br>
-            <p>Partidos ausente: 13</p></br>
-        </td>
-    </tr>
+    {% for jugador in lista_jugadores %}
+        <tr>
+            {% for dato in jugador %}
+                <td>{{ dato }}</td>
+            {% endfor %}
+
+            <td><form class="examples" method="POST" action="{% url 'mercado' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="name" value="{{ jugador.0 }}">
+                    <input type="hidden" name="details" value="{{ jugador.4 }}">
+                    <input type="hidden" name="search" value="{{ sid }}">
+                    <button type="submit">></button>
+            </form></td>
+
+
+        </tr>
+    {% endfor %}
+
+    </tbody>
 </table>
 
 </body>
+
+<script type="text/javascript">
+    
+    var detalles = "{{ detalles }}";
+
+    if(detalles.length != 2 ){
+
+        var detallesT = detalles.split(",")
+
+         modal = document.getElementById("myModal");
+
+        var span = document.getElementsByClassName("close")[0];
+
+        if(detallesT.length == 1){
+
+            document.getElementById('jugNombre').innerText = "{{ name }}";
+
+
+            document.getElementById('jugGoles').innerText = "El jugador no pertenece a las grandes ligas europeas";
+
+
+        }
+
+        else{
+
+            detallesT[0] = detallesT[0].replaceAll("[", "");
+            detallesT[7] = detallesT[7].replaceAll("]", "");
+            detallesT[7] = detallesT[7].replaceAll(";", "");
+            detallesT[7] = detallesT[7].replaceAll("&#x27", "");
+
+            for(var i=0;i<detallesT.length;i++){
+
+                detallesT[i] = detallesT[i].trim()
+
+            }
+
+            document.getElementById('jugNombre').innerText = "{{ name }}";
+            document.getElementById('jugFoto').src = detallesT[7];
+            document.getElementById('jugGoles').innerText = "Goles: " + detallesT[0];
+            document.getElementById('jugAsist').innerText = "Asistencias: " + detallesT[1];
+            document.getElementById('jugAma').innerText = "Amarillas: " + detallesT[2];
+            document.getElementById('jugSegAma').innerText = "Segundas Amarillas: " + detallesT[3];
+            document.getElementById('jugRojas').innerText = "Rojas: " + detallesT[4];
+            document.getElementById('jugMin').innerText = "Minutos totales de juego: " + detallesT[5];
+            document.getElementById('jugAus').innerText = "Partidos ausente: " + detallesT[6];
+
+
+        }
+
+        modal.style.display = "block";
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+    }
+
+    }
+
+</script>
 </html>

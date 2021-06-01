@@ -50,6 +50,8 @@ def clasificacion(request):
 
 				score_jugador += jugador['goles'] * 100
 
+				score_jugador += jugador['asistencias'] * 50
+
 				score_jugador += int(jugador['tiempo_juego'] * 0.1)
 
 				score_jugador -= jugador['amarillas'] * 50

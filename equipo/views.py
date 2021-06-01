@@ -4,6 +4,7 @@ import requests
 from django.shortcuts import render, redirect
 from jugadores.models import Jugador
 from equipo.models import Equipo
+from partidos.models import Partido
 
 listaInfoPartidos = []
 lista_jugadores = []
@@ -45,6 +46,8 @@ def equipo(request):
 
 	res = ""
 
+	semana = rendimientoSemanal(tempList)
+
 	for jugadores in tempList:
 		b.append(Jugador.objects.filter(nombre=jugadores).values_list('nombre','club','edad','altura','valor')[0])
 		c.append(Jugador.objects.filter(nombre=jugadores).values_list('nombre','foto','goles','asistencias','amarillas','segundas_amarillas','rojas','tiempo_juego','victorias','derrotas','empates','ausencias')[0])
@@ -53,7 +56,7 @@ def equipo(request):
 
 	#Le pasamos a la plantilla La lista de jugadores la informacion del equipo y los datos de cada jugador.
 
-	return render(request, "equipo.html", {'jugadores': b, 'equipo': a,'datos': res})
+	return render(request, "equipo.html", {'jugadores': b, 'equipo': a,'datos': res, 'semana': semana})
 
 
 '''Vista para añadir un jugador nuevo al equipo, el usuario busca un jugador y los datos provenientes de TransferMarkt con respecto
@@ -146,7 +149,7 @@ def addPlayer(request):
 
 	for jugadorIndv in lista_jugadores:
 		if jugadorIndv[4] == id_jug:
-			jugador["id"] = jugadorIndv[4]
+			jugador["id_jug"] = jugadorIndv[4]
 			jugador["nombre"] = jugadorIndv[0]
 			jugador["club"] = jugadorIndv[3]
 			if len(body[3].td.text) <= 3:
@@ -273,7 +276,7 @@ def addPlayer(request):
 
 		#Añadimos a la base de datos el jugador
 
-		jugadoresDB(equipo, jugador, listaInfoPartidos)
+		jugadoresDB(equipo, jugador)
 
 
 	#Redirigimos a la web del equipo
@@ -284,57 +287,20 @@ def addPlayer(request):
 
 #Funcion auxiliar para añadir un jugador a la base de datos
 
-def jugadoresDB(equipo, jugador, listaPartidos):
+def jugadoresDB(equipo, jugador):
 
 	#Contadores para los datos del jugador
 
-	goles = 0
-	asistencias = 0
-	amarillas = 0
-	segundas_amarillas = 0
-	rojas = 0
-	tiempo_juego = 0
-	victorias = 0
-	derrotas = 0
-	empates = 0
-	ausencias = 0
-
-	for partido in listaPartidos:
-
-		if(len(partido) == 7):
-			ausencias += 1
-
-		else:
-			goles += int(partido[7])
-			asistencias += int(partido[8])
-			amarillas += int(partido[9])
-			segundas_amarillas += int(partido[10])
-			rojas += int(partido[11])
-			tiempo_juego += int(partido[12])
-
-			if(partido[5].split(":")[0] > partido[5].split(":")[1]):
-				if(partido[2] == "Fuera"):
-					derrotas += 1
-				elif(partido[2] == "Casa"):
-					victorias += 1
-			elif (partido[5].split(":")[0] < partido[5].split(":")[1]):
-				if (partido[2] == "Fuera"):
-					victorias += 1
-				elif (partido[2] == "Casa"):
-					derrotas += 1
-			if (partido[5].split(":")[0] == partido[5].split(":")[1]):
-				empates += 1
-
-	jugador["goles"] = goles
-	jugador["asistencias"] = asistencias
-	jugador["amarillas"] = amarillas
-	jugador["segundas_amarillas"] = segundas_amarillas
-	jugador["rojas"] = rojas
-	jugador["tiempo_juego"] = tiempo_juego
-	jugador["victorias"] = victorias
-	jugador["derrotas"] = derrotas
-	jugador["empates"] = empates
-	jugador["ausencias"] = ausencias
+	jugador["goles"] = 0
+	jugador["asistencias"] = 0
+	jugador["amarillas"] = 0
+	jugador["segundas_amarillas"] = 0
+	jugador["rojas"] = 0
+	jugador["tiempo_juego"] = 0
+	jugador["victorias"] = 0
+	jugador["derrotas"] = 0
+	jugador["empates"] = 0
+	jugador["ausencias"] = 0
 
 	tempPres = 0
 
@@ -354,6 +320,8 @@ def jugadoresDB(equipo, jugador, listaPartidos):
 				tempList[i] = tempList[i].strip('\' ')
 
 	tempList.append(jugador["nombre"])
+
+	print(jugador)
 
 	#Añadimos el nuevo jugador a la base de datos y actualizamos la lista de jugadores del usuario
 
@@ -416,7 +384,7 @@ def delPlayer(request):
 
 	tempList.remove(nombre)
 
-	if len(tempList) is 0:
+	if len(tempList) == 0:
 		tempList = None
 
 	#Eliminamos el jugador de la lista en base de datos
@@ -440,3 +408,71 @@ def crear_equipo(request):
 	#Redirigimos a la pagina del equipo
 
 	return redirect('equipo')
+
+
+def rendimientoSemanal(datos):
+
+	semana = []
+
+	resultado = [0] * 38
+
+	puntos = 0
+
+	for jugador in datos:
+		partidos = Partido.objects.filter(jugador=jugador).values_list('jugador','jornada','localizacion','resultado','goles','asistencias','amarillas','segundas_amarillas','rojas','tiempo_juego').order_by('jornada')
+
+		for partido in partidos:
+			semana.append(partido)
+
+
+	for partido in semana:
+
+		if (int(partido[3].split(":")[0]) > int(partido[3].split(":")[1])):
+			if (partido[2] == "Fuera"):
+				puntos -= 100
+			elif (partido[2] == "Casa"):
+				puntos += 100
+		elif (int(partido[3].split(":")[0]) < int(partido[3].split(":")[1])):
+			if (partido[2] == "Fuera"):
+				puntos += 100
+			elif (partido[2] == "Casa"):
+				puntos -= 100
+		if (int(partido[3].split(":")[0]) == int(partido[3].split(":")[1])):
+			puntos += 50
+
+
+		if partido[4] == None:
+			puntos -= 50
+
+		else:
+			puntos += int(partido[4]) * 100
+
+			puntos += int(partido[5]) * 50
+
+			puntos -= int(partido[6]) * 50
+
+			puntos -= int(partido[8]) * 100
+
+			puntos += int(int(partido[9]) * 0.1)
+
+
+		resultado[partido[1]-1] = resultado[partido[1]-1] + puntos
+
+		puntos = 0
+
+	return resultado
+
+		
+
+	'''
+
+
+				score_jugador -= jugador['amarillas'] * 50
+
+				score_jugador -= jugador['rojas'] * 100
+
+				score_jugador -= jugador['ausencias'] * 50'''
+
+
+
+

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,15 @@
     <title>Mi equipo</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/equipo.css' %}"/>
     <script src="{% static 'js/equipo.js' %}"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.1/dist/chart.min.js"></script>
+
 </head>
+
 <body>
 <!-- Side navigation -->
 <div class="sidenav">
@@ -67,15 +76,33 @@
 </div>
 
 
-<h3>Estadisticas</h3>
+<h3>Puntuación por jornada</h3>
 
-<!--<img src="{% static 'img/precio.png' %}" width="1300">
-<img src="{% static 'img/goles.png' %}" width="1300">
-<img src="{% static 'img/asistencias.png' %}" width="1300">
-<img src="{% static 'img/resultados.png' %}" width="1300">
-<img src="{% static 'img/tarjetas.png' %}" width="1300">
-<img src="{% static 'img/sanciones.png' %}" width="1300">
-<img src="{% static 'img/minutos.png' %}" width="1300">-->
+<div>
+    
+    <canvas id="jornadasChart" width="1500" height="600"></canvas>
+
+</div>
+
+<h3>Estadisticas generales</h3>
+
+<label for="options">Seleccione una opcion:</label>
+
+<select name="options" id="options" onchange="cambiarGrafico(this)">
+  <option value="goles">Goles</option>
+  <option value="asistencias">Asistencias</option>
+  <option value="tarjetas">Tarjetas</option>
+  <option value="resultados">Resultados</option>
+  <option value="minutos">Minutos de juego</option>
+  <option value="ausencias">Ausencias</option>
+</select>
+
+
+<div>
+    
+    <canvas id="myChart" width="1500" height="600"></canvas>
+
+</div>
 
 <!-- The Modal -->
 <div id="myModal" class="modal" style="color:black;text-align: center;">
@@ -110,4 +137,49 @@
 </div>
 
 </body>
+
+<script>
+
+    var jornadas = []
+
+    var numeros = [];
+    for (var i = 1; i <= 38; i++) {
+        numeros.push(i);
+    }
+
+
+    {% for jornada in semana %}
+        jornadas.push(parseInt("{{ jornada }}"))
+    {% endfor %}
+
+
+    var ctx = document.getElementById('jornadasChart').getContext('2d');
+
+
+    var jornadasChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: numeros,
+        datasets: [{
+            label: 'puntos',
+            data: jornadas,
+            backgroundColor: [
+                'rgba(26, 188, 156,1)'
+            ],
+            borderColor: [
+                'rgba(26, 188, 156,1.0)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
+
+</script>
 </html>

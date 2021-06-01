@@ -2,6 +2,8 @@ from django.db import models
 
 class Jugador(models.Model):
 
+	id_jug = models.CharField(max_length=50)
+
 	nombre =  models.CharField(max_length=50)
 
 	club = models.CharField(max_length=50)
@@ -33,6 +35,8 @@ class Jugador(models.Model):
 	ausencias = models.IntegerField()
 
 	foto = models.TextField()
+
+	id_jug = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.nombre
