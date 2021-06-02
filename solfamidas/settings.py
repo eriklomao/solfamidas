@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '8)no9=dypvss40*cz*8vmk+vlb1026agn+v95qbva4kkc8%ca1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['104.215.118.228', 'solfamidas.sytes.net','127.0.0.1']
 
 
 # Application definition

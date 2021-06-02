@@ -6,6 +6,8 @@ from jugadores.models import Jugador
 from equipo.models import Equipo
 from partidos.models import Partido
 
+from django.contrib import messages
+
 listaInfoPartidos = []
 lista_jugadores = []
 
@@ -16,6 +18,11 @@ def equipo(request):
 	#Si el usuario logeado no tiene un equipo creado en base de datos redirigir a la web de creación de equipo
 
 	userN = None
+
+	if not request.user.is_authenticated:
+		messages.warning(request, 'No puedes acceder a esa seccion sin loguearte')
+		return redirect('principal')
+
 
 	if request.user.is_authenticated:
 		userN = request.user.username
@@ -63,6 +70,36 @@ def equipo(request):
 a su busqueda son mostrados'''
 
 def addJugador(request):
+
+
+	if not request.user.is_authenticated:
+		messages.warning(request, 'No puedes acceder a esa seccion sin loguearte')
+		return redirect('principal')
+
+
+
+	equipo = Equipo.objects.filter(usuario=request.user.username).all()[0]
+	
+	a = Equipo.objects.filter(nombre=equipo).values_list('nombre','presupuesto','jugadores')[0]
+
+	if(a[2] is None):
+		tempList = []
+
+	else:
+
+		tempList = a[2].split(",")
+		
+		for i in range(0,len(tempList)):
+				tempList[i] = tempList[i].replace('[', '')
+				tempList[i] = tempList[i].replace(']', '')
+				tempList[i] = tempList[i].strip('\' ')
+
+
+
+	if len(tempList) == 11:
+		messages.warning(request, 'Ya tienes el numero maximo de jugadores, vende alguno antes de comprar')
+		return redirect('equipo')
+
 
 	headers = {'User-Agent':
                    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
@@ -117,13 +154,25 @@ def addJugador(request):
 
 	#Cargamos la plantilla a la cual le pasamos el id de los jugadores y la lista de resultados
 
-	return render(request, "añadir.html", {'sid': sid, 'lista_jugadores': lista_jugadores})
+	return render(request, "anadir.html", {'sid': sid, 'lista_jugadores': lista_jugadores})
 
 '''Añadimos el jugador que el usuario ha seleccionado y actualizamos en base de datos'''
 
 def addPlayer(request):
 
+	if not request.user.is_authenticated:
+		messages.warning(request, 'No puedes acceder a esa seccion sin loguearte')
+		return redirect('principal')
+
+
 	id_jug = request.GET.get('add')
+
+	a = Jugador.objects.filter(id_jug=id_jug).all()
+
+	if len(a) >= 1:
+		messages.warning(request, 'Ese jugador ya pertenece a un equipo')
+		return redirect('addJugador')
+
 
 	equipo = Equipo.objects.filter(usuario=request.user.username).all()[0]
 
@@ -188,7 +237,9 @@ def addPlayer(request):
 			league = divs
 
 	if (league == ''):
-		print("El jugador no pertenece a las grandes ligas")
+		messages.warning(request, 'Ese jugador no pertenece a las grandes ligas europeas')
+		return redirect('addJugador')
+
 
 	else:
 
@@ -276,7 +327,7 @@ def addPlayer(request):
 
 		#Añadimos a la base de datos el jugador
 
-		jugadoresDB(equipo, jugador)
+		jugadoresDB(request, equipo, jugador)
 
 
 	#Redirigimos a la web del equipo
@@ -287,7 +338,7 @@ def addPlayer(request):
 
 #Funcion auxiliar para añadir un jugador a la base de datos
 
-def jugadoresDB(equipo, jugador):
+def jugadoresDB(request, equipo, jugador):
 
 	#Contadores para los datos del jugador
 
@@ -307,6 +358,11 @@ def jugadoresDB(equipo, jugador):
 	e = Equipo.objects.get(nombre=equipo)
 	tempPres = e.presupuesto - jugador["valor"]
 
+	if tempPres < 0:
+		messages.warning(request, 'No tienes fondos suficientes para comprar ese jugador')
+		return redirect('addJugador')
+
+
 	if e.jugadores is None:
 		tempList = []
 
@@ -321,8 +377,6 @@ def jugadoresDB(equipo, jugador):
 
 	tempList.append(jugador["nombre"])
 
-	print(jugador)
-
 	#Añadimos el nuevo jugador a la base de datos y actualizamos la lista de jugadores del usuario
 
 	Equipo.objects.filter(nombre=equipo).update(presupuesto=tempPres, jugadores=tempList)
@@ -334,6 +388,11 @@ def jugadoresDB(equipo, jugador):
 '''Eliminamos el jugador que el usuario ha seleccionado y actualizamos en base de datos'''
 
 def delJugador(request):
+
+
+	if not request.user.is_authenticated:
+		messages.warning(request, 'No puedes acceder a esa seccion sin loguearte')
+		return redirect('principal')
 
 	equipo = Equipo.objects.filter(usuario=request.user.username).all()[0]
 
@@ -365,6 +424,10 @@ def delJugador(request):
 #Vista que se ejecuta cuando el jugador decide vender uno de sus jugadores
 
 def delPlayer(request):
+
+	if not request.user.is_authenticated:
+		messages.warning(request, 'No puedes acceder a esa seccion sin loguearte')
+		return redirect('principal')
 
 	nombre = request.GET.get('del')
 
@@ -398,6 +461,10 @@ def delPlayer(request):
 #Vista para crear el equipo con el nombre que desee el usuario
 
 def crear_equipo(request):
+
+	if not request.user.is_authenticated:
+		messages.warning(request, 'No puedes acceder a esa seccion sin loguearte')
+		return redirect('principal')
 
 	team = request.GET.get('team')
 

@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Clasificación</title>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'css/clasificacion.css' %}"/>
-</head>
+</head> 
 <body>
     <!-- Side navigation -->
     <div class="sidenav">
@@ -25,8 +26,9 @@
         {% endif %}
     </div>
 
-    <div>
-        <h1>Tabla de clasificación</h1>
+    <div style="text-align:center;">
+        <h2>Tabla de clasificación</h1>
+        <h3>¡Consulta aqui la tabla de clasificacion!</h1>
     </div>
 
     <div>
@@ -40,36 +42,7 @@
             </tr>
             </thead>
             <tbody>
-            <!--<tr>
-                <td data-label="Account">1</td>
-                <td data-label="Due Date">Erik Rockets</td>
-                <td data-label="Amount">Iñigo Loma-Osorio</td>
-                <td data-label="Period">12734</td>
-            </tr>
-            <tr>
-                <td scope="row" data-label="Account">2</td>
-                <td data-label="Due Date">Real Juasjuas</td>
-                <td data-label="Amount">Javier Simon</td>
-                <td data-label="Period">11346</td>
-            </tr>
-            <tr>
-                <td scope="row" data-label="Account">3</td>
-                <td data-label="Due Date">FC Julius</td>
-                <td data-label="Amount">Julio Lopez</td>
-                <td data-label="Period">10291</td>
-            </tr>
-            <tr>
-                <td scope="row" data-label="Acount">4</td>
-                <td data-label="Due Date">Robertito United</td>
-                <td data-label="Amount">Roberto Rodriguez-Solano</td>
-                <td data-label="Period">9283</td>
-            </tr>
-            <tr>
-                <td scope="row" data-label="Acount">5</td>
-                <td data-label="Due Date">Atletico de Juanin</td>
-                <td data-label="Amount">Juan Fernandez</td>
-                <td data-label="Period">8213</td>
-            </tr>-->
+            
             {% for equipo,score,user in scores %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
