@@ -362,7 +362,7 @@ def jugadoresDB(request, equipo, jugador):
 		messages.warning(request, 'No tienes fondos suficientes para comprar ese jugador')
 		return redirect('addJugador')
 
-
+		
 	if e.jugadores is None:
 		tempList = []
 
